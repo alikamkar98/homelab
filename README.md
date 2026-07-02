@@ -6,8 +6,12 @@ Windows/Linux system administration: a Proxmox host running a **Windows Server
 node. This repo is both a build guide and my interview-prep script — each doc is
 written so the lab can be rebuilt from scratch.
 
-> Screenshots for each step live in [`screenshots/`](screenshots/) and are
-> referenced from the guides.
+> **Status: In progress** — architecture and step-by-step build guides written
+> (Proxmox host, Windows Server AD DS, GPO, Ubuntu domain join). VM build and
+> screenshots are being added as I stand up the lab.
+
+<!-- Screenshots for each step will live in screenshots/ and be linked from the
+     guides once captured. -->
 
 ---
 
