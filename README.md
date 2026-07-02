@@ -1,17 +1,40 @@
 # Homelab
 
-Documentation for a virtualized homelab built to practice real
-Windows/Linux system administration: a Proxmox host running a **Windows Server
-2022 Active Directory domain**, group policy, and an **Ubuntu Server** member
-node. This repo is both a build guide and my interview-prep script — each doc is
-written so the lab can be rebuilt from scratch.
+A virtualized homelab built to practice real Windows system administration:
+a **Windows Server 2022 Active Directory domain** (`lab.local`) running on
+**VMware Workstation Pro**, with organizational units, users, groups, Group
+Policy, and **PowerShell automation driving user provisioning end-to-end**.
+This repo is both a build record and my interview-prep script — the lab can be
+rebuilt from scratch by following the guides.
 
-> **Status: In progress** — architecture and step-by-step build guides written
-> (Proxmox host, Windows Server AD DS, GPO, Ubuntu domain join). VM build and
-> screenshots are being added as I stand up the lab.
+> **Status: Core domain lab complete and verified.** DC01 promoted to a Domain
+> Controller for `lab.local`; OUs, users, groups, and two GPOs created;
+> [`New-BulkADUsers.ps1`](https://github.com/alikamkar98/it-automation-toolkit)
+> run successfully against the live domain (screenshots below). A Linux member
+> node (Ubuntu + realmd/SSSD domain join) is documented and planned as the next
+> extension.
 
-<!-- Screenshots for each step will live in screenshots/ and be linked from the
-     guides once captured. -->
+---
+
+## What was built
+
+| Component | Role | IP | Platform |
+| --- | --- | --- | --- |
+| **DC01** | Domain Controller, DNS | 192.168.117.10 (static) | Windows Server 2022 (Desktop Experience) on **VMware Workstation Pro** |
+| NAT gateway | Router / DNS forwarder | 192.168.117.2 | VMware NAT (`192.168.117.0/24`) |
+| _Ubuntu member (planned)_ | Linux services + domain join | — | Ubuntu Server 22.04 LTS |
+
+**Domain:** `lab.local` (NetBIOS `LAB`)
+**Hypervisor:** VMware Workstation Pro (free for personal use)
+**VM spec:** 4 GB RAM, 2 vCPU, 60 GB thin disk, NAT networking
+
+### Directory structure
+
+- **OUs:** `IT`, `Sales`, `HR`
+- **Groups:** `IT-Admins`, `Sales-Team`
+- **Users:** 5 created by hand + 4 provisioned by `New-BulkADUsers.ps1`
+- **GPOs:** `Lab - Screen Lock 15min` (domain-wide, 15-min inactivity lock),
+  `Lab - Sales Restrictions` (hides Control Panel for the Sales OU)
 
 ---
 
@@ -19,62 +42,62 @@ written so the lab can be rebuilt from scratch.
 
 ```mermaid
 flowchart TB
-    subgraph Internet
-        WAN([Internet])
-    end
+    WAN([Internet])
 
-    subgraph Host["Proxmox VE Host (bare metal)"]
+    subgraph Host["Windows 11 host — VMware Workstation Pro"]
         direction TB
-        VMBR["vmbr0 - Linux bridge<br/>192.168.10.0/24"]
+        NAT["VMware NAT switch<br/>192.168.117.0/24<br/>gateway .2"]
 
         subgraph VMs
-            DC["Windows Server 2022<br/>DC01 - AD DS / DNS<br/>192.168.10.10"]
-            FS["Windows Server 2022<br/>FS01 - File / member<br/>192.168.10.11"]
-            UB["Ubuntu Server 22.04<br/>UBUNTU01 - services<br/>192.168.10.30"]
+            DC["Windows Server 2022<br/>DC01 — AD DS / DNS<br/>192.168.117.10 (static)"]
+            UB["Ubuntu Server 22.04<br/>member node — planned"]
         end
     end
 
-    WAN --- ROUTER["Home router / gateway<br/>192.168.10.1"]
-    ROUTER --- VMBR
-    VMBR --- DC
-    VMBR --- FS
-    VMBR --- UB
-
-    DC -. "DNS + domain auth<br/>corp.local" .-> FS
-    DC -. "DNS + domain join" .-> UB
+    WAN --- NAT
+    NAT --- DC
+    NAT -. planned .- UB
+    DC -. "DNS + domain auth<br/>lab.local" .-> UB
 ```
 
-| Host | Role | IP | OS |
-| --- | --- | --- | --- |
-| DC01 | Domain Controller, DNS, DHCP | 192.168.10.10 | Windows Server 2022 |
-| FS01 | Member server / file server | 192.168.10.11 | Windows Server 2022 |
-| UBUNTU01 | Linux member node (services) | 192.168.10.30 | Ubuntu Server 22.04 LTS |
-| Gateway | Router | 192.168.10.1 | — |
+---
 
-**Domain:** `corp.local`
+## Screenshots
+
+| Step | Evidence |
+| --- | --- |
+| VM created on VMware Workstation Pro (4 GB / 2 CPU / 60 GB thin / NAT) | ![DC01 VM settings](screenshots/01-vmware-dc01-settings.png) |
+| Static IP `192.168.117.10` + hostname `DC01` | ![Static IP and hostname](screenshots/02-static-ip-hostname.png) |
+| `New-BulkADUsers.ps1` provisioning users into the live `lab.local` domain | ![Bulk AD users run](screenshots/03-bulkadusers-live-domain.png) |
 
 ---
 
 ## Build guides
 
+The step-by-step guides in [`docs/`](docs/) cover the full build. The AD DS,
+GPO, and Ubuntu guides apply directly to this VMware build; the host-setup guide
+also documents a Proxmox alternative.
+
 | # | Guide | What it covers |
 | --- | --- | --- |
-| 1 | [Proxmox host setup](docs/01-proxmox-host.md) | Installing Proxmox VE, networking, creating VMs |
+| 1 | [Host setup](docs/01-proxmox-host.md) | Hypervisor host + creating VMs (VMware Workstation Pro / Proxmox) |
 | 2 | [Windows Server AD DS](docs/02-windows-server-adds.md) | Installing Windows Server, promoting to a Domain Controller, OUs and users |
-| 3 | [GPO configuration](docs/03-gpo-configuration.md) | Two group policies: password policy + desktop/security baseline |
-| 4 | [Ubuntu Server](docs/04-ubuntu-server.md) | Installing Ubuntu, joining the domain, hosting a service |
+| 3 | [GPO configuration](docs/03-gpo-configuration.md) | Group policies: screen-lock baseline + OU-scoped restriction |
+| 4 | [Ubuntu Server](docs/04-ubuntu-server.md) | Installing Ubuntu, joining the domain, hosting a service (planned) |
 | 5 | [Lessons learned](docs/05-lessons-learned.md) | What broke, what I'd do differently, interview talking points |
 
 ---
 
 ## Skills demonstrated
 
-- Type-1 hypervisor administration (Proxmox VE)
-- Windows Server 2022 install and hardening
-- Active Directory Domain Services: forest/domain, OUs, users, groups
-- Group Policy design and troubleshooting (`gpupdate`, `gpresult`)
-- DNS and DHCP on Windows Server
-- Linux server administration and domain integration (SSSD/realmd)
+- Type-2 hypervisor administration (**VMware Workstation Pro**): VM creation,
+  thin-provisioned disks, NAT networking, VMware Tools, shared folders
+- Windows Server 2022 install and initial configuration (static IP, rename)
+- Active Directory Domain Services: forest/domain promotion, OUs, users, groups
+- DNS on Windows Server (AD-integrated zone)
+- Group Policy design (domain-wide and OU-scoped) via PowerShell
+- **PowerShell automation** — bulk user provisioning from CSV against a live
+  domain, with `-WhatIf` previewing and logging
 - Documentation and reproducible builds
 
 ---
@@ -83,5 +106,5 @@ flowchart TB
 
 Follow the guides in order. Every guide lists prerequisites, numbered steps, and
 verification commands so you can confirm each stage before moving on. Free
-software throughout: Proxmox VE (free), Windows Server 2022 (180-day eval),
-Ubuntu Server (free).
+software throughout: **VMware Workstation Pro** (free for personal use),
+Windows Server 2022 (180-day evaluation), Ubuntu Server (free).
