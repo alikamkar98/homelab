@@ -72,6 +72,22 @@ flowchart TB
 
 ---
 
+## Active Directory at scale
+
+Using [`Provision-LabUsers.ps1`](https://github.com/alikamkar98/it-automation-toolkit/blob/main/scripts/Provision-LabUsers.ps1)
+the domain was populated with **~60 accounts across 6 departments** (IT, Sales, HR,
+Finance, Engineering, Marketing), 7 role-based security groups, and 5 privileged
+admin accounts — plus an auto-generated HTML user directory. The script is
+idempotent and preview-safe (`-WhatIf`).
+
+| Evidence | |
+| --- | --- |
+| PowerShell provisioning summary (users per department + group membership) | ![Provisioning summary](screenshots/ad-provisioning-summary.png) |
+| Active Directory Users and Computers — a department OU | ![ADUC](screenshots/ad-users-ou.png) |
+| Auto-generated HTML user directory (59 accounts) | ![User directory](screenshots/ad-user-directory.png) |
+
+---
+
 ## Build guides
 
 The step-by-step guides in [`docs/`](docs/) cover the full build. The AD DS,
