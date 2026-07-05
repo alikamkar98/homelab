@@ -1,0 +1,41 @@
+<svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+
+  <text x="20" y="34" fill="#e6eef7" font-size="20" font-weight="700">Users per department</text>
+  <text x="20" y="54" fill="#8aa0b6" font-size="12">lab.local &#8212; 59 accounts provisioned via PowerShell</text>
+
+  <!-- rows: label (end-anchored at x=150), bar from x=160, scale 400px / 13 -->
+  <!-- IT 13 -->
+  <text x="150" y="92" fill="#c7d5e5" font-size="13" text-anchor="end">IT</text>
+  <rect x="160" y="78" width="400" height="22" rx="4" fill="url(#bar)"/>
+  <text x="568" y="94" fill="#e6eef7" font-size="13" font-weight="700">13</text>
+  <!-- Sales 12 -->
+  <text x="150" y="128" fill="#c7d5e5" font-size="13" text-anchor="end">Sales</text>
+  <rect x="160" y="114" width="369" height="22" rx="4" fill="url(#bar)"/>
+  <text x="537" y="130" fill="#e6eef7" font-size="13" font-weight="700">12</text>
+  <!-- HR 9 -->
+  <text x="150" y="164" fill="#c7d5e5" font-size="13" text-anchor="end">HR</text>
+  <rect x="160" y="150" width="277" height="22" rx="4" fill="url(#bar)"/>
+  <text x="445" y="166" fill="#e6eef7" font-size="13" font-weight="700">9</text>
+  <!-- Finance 8 -->
+  <text x="150" y="200" fill="#c7d5e5" font-size="13" text-anchor="end">Finance</text>
+  <rect x="160" y="186" width="246" height="22" rx="4" fill="url(#bar)"/>
+  <text x="414" y="202" fill="#e6eef7" font-size="13" font-weight="700">8</text>
+  <!-- Engineering 8 -->
+  <text x="150" y="236" fill="#c7d5e5" font-size="13" text-anchor="end">Engineering</text>
+  <rect x="160" y="222" width="246" height="22" rx="4" fill="url(#bar)"/>
+  <text x="414" y="238" fill="#e6eef7" font-size="13" font-weight="700">8</text>
+  <!-- Marketing 8 -->
+  <text x="150" y="272" fill="#c7d5e5" font-size="13" text-anchor="end">Marketing</text>
+  <rect x="160" y="258" width="246" height="22" rx="4" fill="url(#bar)"/>
+  <text x="414" y="274" fill="#e6eef7" font-size="13" font-weight="700">8</text>
+
+  <!-- footer stats -->
+  <line x1="20" y1="300" x2="600" y2="300" stroke="#22364a" stroke-width="1"/>
+  <text x="20" y="326" fill="#8aa0b6" font-size="12">6 departments (OUs)  &#183;  7 security groups  &#183;  5 privileged admin accounts</text>
+</svg>
